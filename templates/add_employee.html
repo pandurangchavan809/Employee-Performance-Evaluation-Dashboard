@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Employee - PerfTrack AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #1a202c;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .logo i {
+      font-size: 2rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    nav a {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      background: #f7fafc;
+      color: #667eea;
+    }
+
+    nav a.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .form-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .form-header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+      color: #4a5568;
+      font-size: 1.05rem;
+    }
+
+    form {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    label i {
+      color: #667eea;
+      width: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      color: #2d3748;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input::placeholder {
+      color: #a0aec0;
+    }
+
+    .input-hint {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-top: -0.25rem;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: #f7fafc;
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      margin-top: 4rem;
+      padding: 2rem;
+      text-align: center;
+      color: #4a5568;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .form-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .form-header h1 {
+        font-size: 2rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">
+        <i class="fas fa-chart-line"></i>
+        <span>PerfTrack AI</span>
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/add_employee" class="active">Add Employee</a>
+        <a href="/evaluate">Evaluate</a>
+        <a href="/report">Reports</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="form-card">
+      <div class="form-header">
+        <h1>Add New Employee</h1>
+        <p>Enter employee details to generate AI-powered performance predictions</p>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <label>
+            <i class="fas fa-user"></i>
+            Employee Name
+          </label>
+          <input type="text" name="name" placeholder="Enter full name" required>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <i class="fas fa-building"></i>
+            Department
+          </label>
+          <input type="text" name="department" placeholder="e.g., Engineering, Marketing, Sales" required>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <i class="fas fa-chart-bar"></i>
+            Performance Metrics
+          </label>
+          <div class="metrics-grid">
+            <div class="form-group">
+              <label style="font-size: 0.9rem;">Attendance</label>
+              <!-- I creating the placeholder for increment which is required field -->
+              <input type="number" name="attendance" min="1" max="10" step="0.1" placeholder="1-10" required>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.9rem;">Task Efficiency</label>
+              <input type="number" name="task_efficiency" min="1" max="10" step="0.1" placeholder="1-10" required>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.9rem;">Teamwork</label>
+              <input type="number" name="teamwork" min="1" max="10" step="0.1" placeholder="1-10" required>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.9rem;">Initiative</label>
+              <input type="number" name="initiative" min="1" max="10" step="0.1" placeholder="1-10" required>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.9rem;">Project Quality</label>
+              <!-- I creating the placeholder for increment which is required field -->
+              <input type="number" name="project_quality" min="1" max="10" step="0.1" placeholder="1-10" required> 
+            </div>
+          </div>
+          <span class="input-hint">Rate each metric on a scale of 1-10</span>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-brain"></i>
+          Submit & Predict Performance
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 PerfTrack AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

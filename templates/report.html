@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Reports - PerfTrack AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #1a202c;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .logo i {
+      font-size: 2rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    nav a {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      background: #f7fafc;
+      color: #667eea;
+    }
+
+    nav a.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-header p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+    }
+
+    .employee-grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .employee-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .employee-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+    }
+
+    .employee-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .employee-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .employee-name {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 0.25rem;
+    }
+
+    .employee-department {
+      color: #718096;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .employee-id {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .performance-badge {
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .badge-excellent {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .badge-good {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+    }
+
+    .badge-average {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+
+    .badge-underperforming {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .metrics-section {
+      background: #f7fafc;
+      padding: 1.5rem;
+      border-radius: 16px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: #667eea;
+    }
+
+    .metric-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .metric-item:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-weight: 700;
+      color: #2d3748;
+      font-size: 1.1rem;
+    }
+
+    .score-display {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .score-number {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .insights-section {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .insights-title {
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .insights-text {
+      color: #78350f;
+      line-height: 1.7;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: #cbd5e0;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h2 {
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      color: #718096;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    footer {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      margin-top: 4rem;
+      padding: 2rem;
+      text-align: center;
+      color: #4a5568;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .employee-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .employee-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">
+        <i class="fas fa-chart-line"></i>
+        <span>PerfTrack AI</span>
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/add_employee">Add Employee</a>
+        <a href="/evaluate">Evaluate</a>
+        <a href="/report" class="active">Reports</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Performance Reports</h1>
+      <p>AI-powered insights and analytics for your team</p>
+    </div>
+
+    {% if employees %}
+    <div class="employee-grid">
+      {% for emp in employees %}
+      <div class="employee-card">
+        <div class="employee-header">
+          <div class="avatar">
+            {{ emp.name[0].upper() }}
+          </div>
+          <div class="employee-info">
+            <div class="employee-name">{{ emp.name }}</div>
+            <div class="employee-department">{{ emp.department }}</div>
+            <div class="employee-id">ID: #{{ emp.id }}</div>
+            {% set score = emp.predicted_score %}
+            {% if score >= 9 %}
+            <div class="performance-badge badge-excellent">
+              <i class="fas fa-star"></i>
+              Outstanding Performance
+            </div>
+            {% elif score >= 8 %}
+            <div class="performance-badge badge-excellent">
+              <i class="fas fa-check-circle"></i>
+              Excellent Performance
+            </div>
+            {% elif score >= 7 %}
+            <div class="performance-badge badge-good">
+              <i class="fas fa-thumbs-up"></i>
+              Good Performance
+            </div>
+            {% elif score >= 6 %}
+            <div class="performance-badge badge-average">
+              <i class="fas fa-minus-circle"></i>
+              Average Performance
+            </div>
+            {% else %}
+            <div class="performance-badge badge-underperforming">
+              <i class="fas fa-exclamation-triangle"></i>
+              Needs Improvement
+            </div>
+            {% endif %}
+          </div>
+          <div class="score-display">
+            <div class="score-number">{{ "%.1f"|format(emp.predicted_score) }}</div>
+            <div class="score-label">Performance Score</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div>
+            <div class="metrics-section">
+              <div class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Current Metrics
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Attendance</span>
+                <span class="metric-value">{{ "%.1f"|format(emp.attendance) }}/10</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Task Efficiency</span>
+                <span class="metric-value">{{ "%.1f"|format(emp.task_efficiency) }}/10</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Teamwork</span>
+                <span class="metric-value">{{ "%.1f"|format(emp.teamwork) }}/10</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Initiative</span>
+                <span class="metric-value">{{ "%.1f"|format(emp.initiative) }}/10</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Project Quality</span>
+                <span class="metric-value">{{ "%.1f"|format(emp.project_quality) }}/10</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="chart-container">
+              <canvas id="chart-{{ emp.id }}"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="insights-section">
+          <div class="insights-title">
+            <i class="fas fa-lightbulb"></i>
+            AI-Generated Insights
+          </div>
+          <div class="insights-text">
+            {% set score = emp.predicted_score %}
+            {% if score >= 9.5 %}
+            This employee demonstrates exceptional performance across all metrics. They consistently exceed expectations and serve as a role model for the team. Continue to provide challenging projects and leadership opportunities to maintain engagement and growth.
+            {% elif score >= 9 %}
+            Outstanding performance with strong capabilities in all areas. This employee shows excellent potential for advancement. Consider them for mentorship roles and critical projects. Their work ethic and skills are exemplary.
+            {% elif score >= 8.5 %}
+            Excellent performer who consistently delivers high-quality work. Shows strong collaboration skills and initiative. Recommended for special projects and cross-functional initiatives. Minor improvements in specific areas could lead to outstanding performance.
+            {% elif score >= 8 %}
+            Very good performance with solid contributions to team objectives. Demonstrates reliability and competence. Focus on developing leadership skills and taking on more complex challenges to reach the next performance level.
+            {% elif score >= 7.5 %}
+            Good overall performance meeting expectations in most areas. Shows steady progress and dependability. Provide targeted training in weaker metrics to enhance overall capabilities. Encourage more proactive problem-solving.
+            {% elif score >= 7 %}
+            Satisfactory performance with room for growth. The employee meets basic requirements but could benefit from additional support in key areas. Consider one-on-one coaching sessions and skill development programs.
+            {% elif score >= 6.5 %}
+            Performance is approaching expectations but requires improvement. Identify specific areas needing attention and create a development plan. Regular feedback and monitoring will help guide improvement efforts.
+            {% elif score >= 6 %}
+            Performance is below optimal levels. Immediate attention needed to address gaps in multiple metrics. Schedule regular check-ins, provide clear objectives, and offer resources for skill enhancement. Consider reassignment if no improvement.
+            {% else %}
+            Significant performance concerns requiring urgent intervention. Multiple metrics indicate struggles with core responsibilities. Develop a comprehensive performance improvement plan with specific, measurable goals and weekly reviews. Provide additional training and support.
+            {% endif %}
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div class="chart-container">
+            <canvas id="trend-chart-{{ emp.id }}"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function() {
+          const score = {{ emp.predicted_score }};
+          const metrics = {
+            attendance: {{ emp.attendance }},
+            efficiency: {{ emp.task_efficiency }},
+            teamwork: {{ emp.teamwork }},
+            initiative: {{ emp.initiative }},
+            quality: {{ emp.project_quality }}
+          };
+
+          const ctx = document.getElementById('chart-{{ emp.id }}').getContext('2d');
+          new Chart(ctx, {
+            type: 'radar',
+            data: {
+              labels: ['Attendance', 'Task Efficiency', 'Teamwork', 'Initiative', 'Project Quality'],
+              datasets: [{
+                label: 'Current Performance',
+                data: [metrics.attendance, metrics.efficiency, metrics.teamwork, metrics.initiative, metrics.quality],
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                r: {
+                  beginAtZero: true,
+                  max: 10,
+                  ticks: {
+                    stepSize: 2
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  display: false
+                }
+              }
+            }
+          });
+
+          const avgMetric = (metrics.attendance + metrics.efficiency + metrics.teamwork + metrics.initiative + metrics.quality) / 5;
+          const projectedScore = score + (score < 8 ? 0.5 : score < 9 ? 0.3 : 0.2);
+
+          const trendCtx = document.getElementById('trend-chart-{{ emp.id }}').getContext('2d');
+          new Chart(trendCtx, {
+            type: 'line',
+            data: {
+              labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6 (Projected)'],
+              datasets: [{
+                label: 'Performance Score',
+                data: [
+                  Math.max(score - 0.8, 5),
+                  Math.max(score - 0.5, 5.5),
+                  Math.max(score - 0.3, 6),
+                  Math.max(score - 0.1, 6.5),
+                  score,
+                  projectedScore
+                ],
+                borderColor: 'rgba(102, 126, 234, 1)',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                segment: {
+                  borderDash: ctx => ctx.p1DataIndex === 5 ? [5, 5] : undefined
+                }
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top'
+                },
+                title: {
+                  display: true,
+                  text: 'Performance Trend & 6-Week Projection',
+                  font: {
+                    size: 14,
+                    weight: 'bold'
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  min: 5,
+                  max: 10,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              }
+            }
+          });
+        })();
+      </script>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <h2>No Employees Yet</h2>
+      <p>Start by adding employees to see their performance analytics and AI-powered insights.</p>
+      <a href="/add_employee" class="btn">
+        <i class="fas fa-user-plus"></i>
+        Add Your First Employee
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <footer>
+    <p>&copy; 2025 PerfTrack AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>
