@@ -5,7 +5,6 @@ import joblib
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
