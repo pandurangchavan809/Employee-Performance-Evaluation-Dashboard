@@ -19,6 +19,6 @@ y = data['performance_score']
 model = LinearRegression()
 model.fit(X, y)
 
-# Save model as .pkl file in model folder
+# Save model as .pkl file
 joblib.dump(model, 'model/performance_model.pkl')
 print("✅ Model trained and saved as performance_model.pkl")
