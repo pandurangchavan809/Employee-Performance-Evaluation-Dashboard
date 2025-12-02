@@ -13,7 +13,7 @@ load_dotenv()
 # Load AI model
 model = joblib.load('model/performance_model.pkl')
 
-# MySQL Connection
+# MySQL Connection         # all the passwords and database information should be in the .env file for security
 def get_db_connection():
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
