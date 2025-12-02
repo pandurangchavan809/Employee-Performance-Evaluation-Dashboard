@@ -28,7 +28,7 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
-# Add Employee & Predict Score
+# Add Employee & Predict Score   
 @app.route('/add_employee', methods=['GET', 'POST'])
 def add_employee():
     if request.method == 'POST':
