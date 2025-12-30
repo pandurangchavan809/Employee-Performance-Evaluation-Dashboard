@@ -9,9 +9,8 @@ __pycache__/
 *.db
 *.sqlite3
 *.egg-info/
-venv/
 .env/
-
+.venv/
 # --- Node (if you also have frontend)
 node_modules/
 npm-debug.log*

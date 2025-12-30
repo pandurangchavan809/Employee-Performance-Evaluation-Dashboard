@@ -4,16 +4,42 @@ import joblib
 import numpy as np
 import os
 from dotenv import load_dotenv
-
+from google import genai 
 app = Flask(__name__)
 
-# Load environment variables from .env file
+
 load_dotenv()
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+
+# CLEANED AI SECTION :
+def get_ai_insight(emp):
+    """Generates a cleaned professional performance summary."""
+    model_name = 'gemini-2.5-flash' 
+
+    prompt = (
+        f"Analyze performance for {emp['name']}. "
+        f"Attendance: {emp['attendance']}, Efficiency: {emp['task_efficiency']}, "
+        f"Teamwork: {emp['teamwork']}, Initiative: {emp['initiative']}, Quality: {emp['project_quality']}. "
+        "Provide a concise 2-sentence summary and one bulleted 'Growth Tip'. "
+        "Do not use markdown bolding in the response."
+    )
+
+    try:
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Log Error: {e}")
+        return "Insight currently being generated. Please refresh shortly."
 
 # Load AI model
 model = joblib.load('model/performance_model.pkl')
 
-# MySQL Connection         # all the passwords and database information should be in the .env file for security
+# MySQL Connection
 def get_db_connection():
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
@@ -43,7 +69,6 @@ def add_employee():
         # Predict performance
         features = np.array([[attendance, task_efficiency, teamwork, initiative, project_quality]])
         predicted_score = float(model.predict(features)[0])
-
 
         # Store in MySQL
         conn = get_db_connection()
@@ -89,7 +114,7 @@ def evaluate():
         cursor.close()
         conn.close()
 
-        # Optionally, re-predict overall score using your AI model
+        # Re-predict overall score
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT attendance, task_efficiency, teamwork, initiative, project_quality FROM employees WHERE id=%s", (emp_id,))
@@ -113,6 +138,11 @@ def report():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM employees")
     employees = cursor.fetchall()
+    
+    # Add AI insights to each employee object before sending to template
+    for emp in employees:
+        emp['ai_insight'] = get_ai_insight(emp)
+        
     cursor.close()
     conn.close()
     return render_template('report.html', employees=employees)
@@ -120,4 +150,3 @@ def report():
 # Run App
 if __name__ == '__main__':
     app.run(debug=True)
-
